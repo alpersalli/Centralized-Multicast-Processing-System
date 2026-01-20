@@ -65,9 +65,17 @@ public class App
 
         Thread clientThread = new Thread(() -> {
             try {
-                Socket socketClient = new Socket(clientIp, clientPort);
+                PacketContent newPacketContent = new PacketContent("10-12-2001",12,1,"TestData");
+                ByteBuffer buffer = packetManager.packet_to_byte(newPacketContent);
+                Socket socketClient = new Socket(serverIp, serverPort);
                 System.out.println("Client Connected");
-            } catch (IOException e) {
+                
+                socketClient.getOutputStream().write(buffer.array(), 0, buffer.limit());
+                socketClient.getOutputStream().flush();
+                socketClient.close();
+                System.out.println("Send successfully!");
+            }
+            catch (IOException e){
                 e.printStackTrace();
             }
         }, "testClient");
