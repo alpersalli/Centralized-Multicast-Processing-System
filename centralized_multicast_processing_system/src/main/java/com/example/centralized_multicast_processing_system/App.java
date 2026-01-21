@@ -8,6 +8,7 @@ import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Properties;
@@ -40,7 +41,7 @@ public class App
         System.out.println(testPacket.getTrackNumber());
         System.out.println(testPacket.getPriority());
         System.out.println(testPacket.getPayload());
-
+        
         Thread serverThread = new Thread(() -> {
             try {
                 // ServerSocket serverSocket = new ServerSocket(serverPort, 50, InetAddress.getByName(serverIp));
@@ -79,12 +80,17 @@ public class App
             try {
                 PacketContent newPacketContent = new PacketContent("10-12-2001",12,1,"TestData");
                 ByteBuffer buffer = packetManager.packet_to_byte(newPacketContent);
-                Socket socketClient = new Socket(serverIp, serverPort);
+                byte[] data = buffer.array();
+                // Socket socketClient = new Socket(serverIp, serverPort);
+                DatagramSocket udpClientSocket = new DatagramSocket();
+                DatagramPacket udpPacket = new DatagramPacket(data, data.length, InetAddress.getByName(serverIp), serverPort);
                 System.out.println("Client Connected");
+                udpClientSocket.send(udpPacket);
                 
-                socketClient.getOutputStream().write(buffer.array(), 0, buffer.limit());
-                socketClient.getOutputStream().flush();
-                socketClient.close();
+                // socketClient.getOutputStream().write(buffer.array(), 0, buffer.limit());
+                // socketClient.getOutputStream().flush();
+                // socketClient.close();
+                udpClientSocket.close();
                 System.out.println("Send successfully!");
             }
             catch (IOException e){
@@ -92,7 +98,33 @@ public class App
             }
         }, "testClient");
 
-        serverThread.start();
+        Thread multicastListenerThread = new Thread(() ->{
+            try{
+                MulticastSocket multicastListenerSocket = new MulticastSocket(serverPort);
+                InetAddress group = InetAddress.getByName("230.0.0.0");
+                multicastListenerSocket.joinGroup(group);
+                PacketContent receivedMulticastPacket = new PacketContent();
+                byte[] buffer = new byte[1024];
+                while(true){
+                    
+                    DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+                    multicastListenerSocket.receive(packet);
+                    System.out.println("Multicast Packet received.");
+                    receivedMulticastPacket = packetManager.packet_to_String(buffer);
+                    System.out.println(receivedMulticastPacket.getTimestamp());
+                    System.out.println(receivedMulticastPacket.getTrackNumber());
+                    System.out.println(receivedMulticastPacket.getPriority());
+                    System.out.println(receivedMulticastPacket.getPayload());
+
+                }
+            }
+            catch (IOException e){
+                e.printStackTrace();
+            }
+        }, "testMulticastListener");
+
+        // serverThread.start();
         clientThread.start();
+        multicastListenerThread.start();
     }
 }
