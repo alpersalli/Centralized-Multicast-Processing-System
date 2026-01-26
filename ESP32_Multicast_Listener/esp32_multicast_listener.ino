@@ -64,7 +64,7 @@ void setup() {
   connectWiFi();
 
   if (udp.listenMulticast(multicastIP, port)) {
-    Serial.println("Multicast dinleniyor...");
+    Serial.println("Multicast listening.");
 
     udp.onPacket([](AsyncUDPPacket packet) {
       Serial.print("Paket received: ");
