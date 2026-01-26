@@ -1,26 +1,26 @@
 package com.example.centralized_multicast_processing_system;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
-import java.util.Arrays;
 import java.util.Properties;
 
-/**
- * Hello world!
- *
- */
-public class App 
-{
-    public static void main( String[] args ) throws IOException
-    {
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class CentralizedMulticastProcessingSystemApplication {
+
+    public static void main(String[] args) throws FileNotFoundException, IOException {
+        SpringApplication.run(CentralizedMulticastProcessingSystemApplication.class, args);
+
+
         Properties props = new Properties();
         try (FileInputStream fis = new FileInputStream("centralized_multicast_processing_system/config.properties")) {
             props.load(fis);
@@ -28,10 +28,10 @@ public class App
         String serverIp = props.getProperty("server.ip");
         int serverPort = Integer.parseInt(props.getProperty("server.port"));
         String multicastAddressIp = props.getProperty("multicastAddress.ip");
-        int multicastAddressPort = Integer.parseInt(props.getProperty("multicastAdrress.port"));
+        int multicastAddressPort = Integer.parseInt(props.getProperty("multicastAddress.port"));
 
         PacketManager packetManager = new PacketManager();
-        ByteBuffer testByteBuffer = packetManager.packet_to_byte(new PacketContent("10-12-2001",12,1,"TestData"));
+        ByteBuffer testByteBuffer = packetManager.packet_to_byte(new PacketContent("10-12-2001",12,1,"TestData",2,2));
     
         byte[] testBytes = testByteBuffer.array();
 
@@ -41,6 +41,8 @@ public class App
         System.out.println(testPacket.getTrackNumber());
         System.out.println(testPacket.getPriority());
         System.out.println(testPacket.getPayload());
+        System.out.println(testPacket.getX_coordinate());
+        System.out.println(testPacket.getY_coordinate());
         
         Thread serverThread = new Thread(() -> {
             try {
@@ -59,6 +61,9 @@ public class App
                     System.out.println(receivedPacketContent.getTrackNumber());
                     System.out.println(receivedPacketContent.getPriority());
                     System.out.println(receivedPacketContent.getPayload());
+                    System.out.println(receivedPacketContent.getX_coordinate());
+                    System.out.println(receivedPacketContent.getY_coordinate());
+
                     if (buffer != null) {
                         MulticastSocket multicastSocket = new MulticastSocket();
                         InetAddress group = InetAddress.getByName(multicastAddressIp);
@@ -78,7 +83,7 @@ public class App
 
         Thread clientThread = new Thread(() -> {
             try {
-                PacketContent newPacketContent = new PacketContent("10-12-2001",12,1,"TestData");
+                PacketContent newPacketContent = new PacketContent("10-12-2001",12,1,"TestData",3,4);
                 ByteBuffer buffer = packetManager.packet_to_byte(newPacketContent);
                 byte[] data = buffer.array();
                 // Socket socketClient = new Socket(serverIp, serverPort);
@@ -115,6 +120,8 @@ public class App
                     System.out.println(receivedMulticastPacket.getTrackNumber());
                     System.out.println(receivedMulticastPacket.getPriority());
                     System.out.println(receivedMulticastPacket.getPayload());
+                    System.out.println(receivedMulticastPacket.getX_coordinate());
+                    System.out.println(receivedMulticastPacket.getY_coordinate());
 
                 }
             }
@@ -123,8 +130,9 @@ public class App
             }
         }, "testMulticastListener");
 
-        // serverThread.start();
-        clientThread.start();
-        multicastListenerThread.start();
+        serverThread.start();
+        // clientThread.start();
+        // multicastListenerThread.start();
     }
+
 }

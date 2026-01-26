@@ -7,7 +7,7 @@ import com.example.centralized_multicast_processing_system.PacketContent;
 public class PacketManager extends PacketContent{
 
     public ByteBuffer packet_to_byte(PacketContent packet){
-        ByteBuffer byte_array = ByteBuffer.allocate(32);
+        ByteBuffer byte_array = ByteBuffer.allocate(90);
 
         /* Conversion timestamp to bytes */
         byte[] timestamp = packet.getTimestamp().getBytes();
@@ -20,6 +20,9 @@ public class PacketManager extends PacketContent{
         byte[] payload = packet.getPayload().getBytes();
         byte_array.put((byte)payload.length);
         byte_array.put(payload);
+
+        byte_array.putInt(packet.getX_coordinate());
+        byte_array.putInt(packet.getY_coordinate());
 
         byte_array.flip();
 
@@ -47,7 +50,10 @@ public class PacketManager extends PacketContent{
         buffer.get(payload);
         String payloadString = new String(payload);
 
-        return new PacketContent(timestampString,trackNumber,getPriority,payloadString);
+        int x_coordinate = buffer.getInt();
+        int y_coordinate = buffer.getInt();
+
+        return new PacketContent(timestampString,trackNumber,getPriority,payloadString,x_coordinate,y_coordinate);
     }
 
     

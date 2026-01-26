@@ -1,0 +1,276 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    width: 100vw;
+    height: 100vh;
+    background-color: #000814;
+    font-family: 'Courier New', monospace;
+    color: #00ff96;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Header */
+.header {
+    position: absolute;
+    top: 20px;
+    text-align: center;
+    z-index: 10;
+}
+
+.header h1 {
+    margin: 0;
+    font-size: 28px;
+    font-weight: bold;
+    text-shadow: 0 0 10px #00ff96, 0 0 20px #00ff96;
+    letter-spacing: 3px;
+}
+
+/* Canvas Container */
+.canvas-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#sonarCanvas {
+    border: 2px solid #00ff96;
+    box-shadow: 0 0 20px rgba(0, 255, 150, 0.3);
+    border-radius: 8px;
+    background-color: #0a0e27;
+}
+
+/* Control Panel */
+.control-panel {
+    position: absolute;
+    bottom: 20px;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    background-color: rgba(10, 14, 39, 0.95);
+    padding: 15px 30px;
+    border-radius: 10px;
+    border: 1px solid #00ff96;
+    box-shadow: 0 0 15px rgba(0, 255, 150, 0.3);
+    z-index: 10;
+}
+
+.btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 14px;
+    font-family: 'Courier New', monospace;
+    transition: all 0.3s;
+    text-transform: uppercase;
+}
+
+.btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+.btn-pause {
+    background-color: #00ff96;
+    color: #000814;
+}
+
+.btn-pause.paused {
+    background-color: #ff3366;
+    color: #ffffff;
+}
+
+.btn-clear {
+    background-color: #ffa500;
+    color: #000814;
+}
+
+.scale-control {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+}
+
+.scale-control label {
+    color: #00ff96;
+    font-weight: bold;
+}
+
+.scale-control input[type="range"] {
+    width: 120px;
+    cursor: pointer;
+    accent-color: #00ff96;
+}
+
+.scale-control span {
+    min-width: 50px;
+    color: #ffffff;
+    font-weight: bold;
+}
+
+/* Stats Panel */
+.stats-panel {
+    position: absolute;
+    top: 80px;
+    right: 20px;
+    background-color: rgba(10, 14, 39, 0.95);
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #00ff96;
+    box-shadow: 0 0 15px rgba(0, 255, 150, 0.3);
+    min-width: 250px;
+    z-index: 10;
+}
+
+.stat-item {
+    font-size: 13px;
+    margin-bottom: 10px;
+    color: #00ff96;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.stat-item:last-child {
+    margin-bottom: 0;
+}
+
+.stat-value {
+    color: #ffffff;
+    font-weight: bold;
+    margin-left: 10px;
+}
+
+/* Status Classes */
+.status-active {
+    color: #00ff96 !important;
+    text-shadow: 0 0 5px #00ff96;
+}
+
+.status-paused {
+    color: #ff3366 !important;
+    text-shadow: 0 0 5px #ff3366;
+}
+
+.status-connected {
+    color: #00ff96 !important;
+    text-shadow: 0 0 5px #00ff96;
+}
+
+.status-disconnected {
+    color: #ff3366 !important;
+    text-shadow: 0 0 5px #ff3366;
+}
+
+.status-connecting {
+    color: #ffa500 !important;
+    text-shadow: 0 0 5px #ffa500;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+/* Footer Note */
+.footer-note {
+    position: absolute;
+    bottom: 80px;
+    font-size: 11px;
+    color: #5a7a92;
+    text-align: center;
+    z-index: 10;
+}
+
+/* Packet Info Tooltip */
+.packet-tooltip {
+    position: absolute;
+    background-color: rgba(10, 14, 39, 0.98);
+    border: 1px solid #00ff96;
+    border-radius: 5px;
+    padding: 10px;
+    font-size: 11px;
+    color: #00ff96;
+    pointer-events: none;
+    z-index: 100;
+    box-shadow: 0 0 15px rgba(0, 255, 150, 0.5);
+    display: none;
+}
+
+.packet-tooltip.show {
+    display: block;
+}
+
+.packet-tooltip-line {
+    margin: 3px 0;
+}
+
+/* Responsive Design */
+@media (max-width: 900px) {
+    #sonarCanvas {
+        width: 90vw;
+        height: 90vw;
+    }
+    
+    .header h1 {
+        font-size: 18px;
+        letter-spacing: 2px;
+    }
+    
+    .control-panel {
+        flex-direction: column;
+        gap: 10px;
+        padding: 10px 20px;
+        bottom: 10px;
+    }
+    
+    .stats-panel {
+        top: auto;
+        bottom: 200px;
+        right: 10px;
+        font-size: 11px;
+        min-width: 200px;
+    }
+    
+    .scale-control {
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .scale-control input[type="range"] {
+        width: 150px;
+    }
+    
+    .footer-note {
+        bottom: 180px;
+        font-size: 9px;
+    }
+}
+
+@media (max-width: 600px) {
+    .header h1 {
+        font-size: 14px;
+    }
+    
+    .stats-panel {
+        min-width: 180px;
+        font-size: 10px;
+        padding: 10px;
+    }
+    
+    .btn {
+        padding: 8px 15px;
+        font-size: 12px;
+    }
+}
