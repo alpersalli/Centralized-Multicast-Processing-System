@@ -10,16 +10,18 @@ import java.net.MulticastSocket;
 import java.nio.ByteBuffer;
 import java.util.Properties;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ApplicationContext;
+
 
 @SpringBootApplication
 public class CentralizedMulticastProcessingSystemApplication {
 
     public static void main(String[] args) throws FileNotFoundException, IOException {
-        SpringApplication.run(CentralizedMulticastProcessingSystemApplication.class, args);
+        ApplicationContext context = SpringApplication.run(CentralizedMulticastProcessingSystemApplication.class, args);
 
+        WebSocketSender webSocketSender = context.getBean(WebSocketSender.class);
 
         Properties props = new Properties();
         try (FileInputStream fis = new FileInputStream("centralized_multicast_processing_system/config.properties")) {
@@ -51,6 +53,9 @@ public class CentralizedMulticastProcessingSystemApplication {
                 System.out.println("Client accepted");
                 PacketContent receivedPacketContent = new PacketContent();
                 byte[] buffer = new byte[1024];
+                
+                Thread.sleep(3000);
+                webSocketSender.sendData(new PacketContent("10-12-2001",39485,3,"TestData",50,0));
 
                 while (true) {
                     // Socket socketServer = serverSocket.accept();
@@ -77,6 +82,8 @@ public class CentralizedMulticastProcessingSystemApplication {
                     
                 }
             } catch (IOException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }, "testServer");
