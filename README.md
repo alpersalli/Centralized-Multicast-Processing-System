@@ -1,7 +1,7 @@
 # Centralized Multicast Processing System
 
 A comprehensive system for collecting, processing, and real-time visualization of UDP multicast packets from ESP32 IoT devices on a Java Spring Boot server.
-
+![Demo](centralized_multicast_processing_system/demo/sonar_radar_system.gif)
 ## 📋 About the Project
 
 This system collects sensor data from multiple IoT devices in a centralized server by:
