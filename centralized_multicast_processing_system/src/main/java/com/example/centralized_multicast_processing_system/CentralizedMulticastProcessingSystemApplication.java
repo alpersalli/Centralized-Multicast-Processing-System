@@ -24,7 +24,7 @@ public class CentralizedMulticastProcessingSystemApplication {
         WebSocketSender webSocketSender = context.getBean(WebSocketSender.class);
 
         Properties props = new Properties();
-        try (FileInputStream fis = new FileInputStream("centralized_multicast_processing_system/config.properties")) {
+        try (FileInputStream fis = new FileInputStream("config.properties")) {
             props.load(fis);
         }
         String serverIp = props.getProperty("server.ip");
@@ -54,14 +54,15 @@ public class CentralizedMulticastProcessingSystemApplication {
                 PacketContent receivedPacketContent = new PacketContent();
                 byte[] buffer = new byte[1024];
                 
-                Thread.sleep(3000);
-                webSocketSender.sendData(new PacketContent("10-12-2001",39485,3,"TestData",50,0));
+                // Thread.sleep(3000);
+                // webSocketSender.sendData(new PacketContent("10-12-2001",39485,3,"TestData",50,0));
 
                 while (true) {
                     // Socket socketServer = serverSocket.accept();
                     DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
                     udpSocketServer.receive(packet);
                     receivedPacketContent = packetManager.packet_to_String(buffer);
+                    webSocketSender.sendData(receivedPacketContent);
                     System.out.println(receivedPacketContent.getTimestamp());
                     System.out.println(receivedPacketContent.getTrackNumber());
                     System.out.println(receivedPacketContent.getPriority());
@@ -82,8 +83,6 @@ public class CentralizedMulticastProcessingSystemApplication {
                     
                 }
             } catch (IOException e) {
-                e.printStackTrace();
-            } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }, "testServer");
